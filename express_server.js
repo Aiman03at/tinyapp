@@ -16,6 +16,24 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+///a function that returns a string of 6 random alphanumeric characters:
+/**
+ * @returns---6 digit alphanumeric character
+ */
+
+  function generateRandomString() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    
+    let randomString = '';
+    
+    for (let i = 0; i < 6; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        randomString += characters[randomIndex];
+    }
+    
+    return randomString;
+  }
+
 
 ///Using express to create a server
 
@@ -77,7 +95,15 @@ app.get("/urls/:id", (req, res) => {
 
 ////
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  console.log(req.body.longURL); // Log the POST request body to the console
+  let random =generateRandomString();
+  console.log(random);
+  urlDatabase[random] = req.body.longURL;
   res.send("Ok"); // Respond with 'Ok' (we will replace this)
 });
 
+
+app.get("/u/:id", (req, res) => {
+  // const longURL = ...s
+  res.redirect(longURL);
+});
