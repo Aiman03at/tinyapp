@@ -3,6 +3,10 @@
 const express = require('express');
 const app = express();
 const PORT = 8080;
+const bodyParser = require('body-parser');
+
+// Middleware to parse request bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 ///This tells the Express app to use EJS as its templating engine.
 app.set("view engine", "ejs");
 
@@ -93,7 +97,7 @@ app.get("/urls/:id", (req, res) => {
 
 
 
-////
+////Post method to redirect to the shortURL
 app.post("/urls", (req, res) => {
   console.log(req.body.longURL); // Log the POST request body to the console
   let random =generateRandomString();
@@ -109,3 +113,11 @@ app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[id];
   res.redirect(longURL);
 });
+
+////Post method to delete an entry
+
+app.post("/urls/:id/delete",(req,res)=>{
+  let id = req.params.id;
+  delete urlDatabase[id];
+  res.redirect('/urls')
+})
