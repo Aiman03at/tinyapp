@@ -100,10 +100,12 @@ app.post("/urls", (req, res) => {
   console.log(random);
   urlDatabase[random] = req.body.longURL;
   res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  
 });
 
 
 app.get("/u/:id", (req, res) => {
-  // const longURL = ...s
+  let id = req.params.id;
+  const longURL = urlDatabase[id];
   res.redirect(longURL);
 });
