@@ -12,7 +12,7 @@ const urlDatabase = {
 };
 
 
-///Using express for routing
+///Using express to create a server
 
 
 app.get("/", (req, res) => {
@@ -22,3 +22,11 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
+////Add Routing
+
+app.get("/urls.json",(req,res) =>{
+res.json(urlDatabase);
+
+})
