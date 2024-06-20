@@ -3,6 +3,8 @@
 const express = require('express');
 const app = express();
 const PORT = 8080;
+///This tells the Express app to use EJS as its templating engine.
+app.set("view engine", "ejs");
 
 ///Database
 
@@ -30,3 +32,24 @@ app.get("/urls.json",(req,res) =>{
 res.json(urlDatabase);
 
 })
+
+
+////Sending Html to the app
+
+app.get("/hello",(req,res) =>{
+
+  res.send("<html><body>Hello <b>World</b></body></html>\n")
+
+})
+
+///accessing a variable sent in one request from another request
+//a cannot be accessed through fetch
+
+app.get("/set", (req, res) => {
+  const a = 1;
+  res.send(`a = ${a}`);
+});
+
+app.get("/fetch", (req, res) => {
+  res.send(`a = ${a}`);
+});
