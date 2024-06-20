@@ -6,6 +6,9 @@ const PORT = 8080;
 ///This tells the Express app to use EJS as its templating engine.
 app.set("view engine", "ejs");
 
+///To make this data readable, we will need to use another piece of middleware which will translate, or parse the body.
+app.use(express.urlencoded({ extended: true }));
+
 ///Database
 
 const urlDatabase = {
@@ -73,4 +76,8 @@ app.get("/urls/:id", (req, res) => {
 
 
 ////
+app.post("/urls", (req, res) => {
+  console.log(req.body); // Log the POST request body to the console
+  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+});
 
