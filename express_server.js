@@ -87,7 +87,7 @@ app.get("/urls/new", (req, res) => {
 ///Adding a Second Route and Template
 ///The end point for such a page will be in the format /urls/:id. The : in front of id indicates that id is a route parameter.
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: 'http://www.lighthouselabs.ca' };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
   res.render("urls_show", templateVars);
 });
 
