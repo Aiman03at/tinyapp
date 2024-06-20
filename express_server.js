@@ -99,7 +99,7 @@ app.post("/urls", (req, res) => {
   let random =generateRandomString();
   console.log(random);
   urlDatabase[random] = req.body.longURL;
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls/${random}`); // Redirect to the short uRL
   
 });
 
