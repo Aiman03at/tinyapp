@@ -59,3 +59,10 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
+
+///Adding a Second Route and Template
+///The end point for such a page will be in the format /urls/:id. The : in front of id indicates that id is a route parameter.
+app.get("/urls/:id", (req, res) => {
+  const templateVars = { id: req.params.id, longURL: /* What goes here? */ };
+  res.render("urls_show", templateVars);
+});
