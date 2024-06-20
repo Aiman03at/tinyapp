@@ -45,7 +45,7 @@ app.get("/hello",(req,res) =>{
 ///accessing a variable sent in one request from another request
 //a cannot be accessed through fetch
 
-app.get("/set", (req, res) => {
+/*app.get("/set", (req, res) => {
   const a = 1;
   res.send(`a = ${a}`);
 });
@@ -53,7 +53,7 @@ app.get("/set", (req, res) => {
 app.get("/fetch", (req, res) => {
   res.send(`a = ${a}`);
 });
-
+*/
 /////add a new route handler for "/urls" and use res.render() to pass the URL data to our template.
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };

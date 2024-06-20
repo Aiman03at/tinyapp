@@ -17,6 +17,7 @@
     <title>TinyApp</title>
   </head>
   <body>
+    <%- include('header'); -%>
     <main style="margin: 1em;">
       <h3>My URLs</h3>
       <table class="table">
@@ -27,7 +28,7 @@
           </tr>
         </thead>
         <tbody>
-          <%- include('header'); -%>
+          
           <% for (let id in urls) { %>
             <tr>
               <td><%= id %></td>
