@@ -59,10 +59,18 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
-
+// add a new a GET route to render the urls_new.ejs template (given below) in the browser, to present the form to the user;
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
 ///Adding a Second Route and Template
 ///The end point for such a page will be in the format /urls/:id. The : in front of id indicates that id is a route parameter.
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: 'http://www.lighthouselabs.ca' };
   res.render("urls_show", templateVars);
 });
+
+
+
+////
+
