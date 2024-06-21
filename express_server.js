@@ -130,8 +130,3 @@ app.post("/urls/:id", (req, res) => {
   res.redirect('/urls');
 });
 
-// Route to render the form for editing a URL
-app.get("/urls/:id/update", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
-  res.render("urls_show", templateVars);
-});
