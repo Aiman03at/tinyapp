@@ -121,3 +121,17 @@ app.post("/urls/:id/delete",(req,res)=>{
   delete urlDatabase[id];
   res.redirect('/urls')
 })
+
+// Post method to update a URL entry
+app.post("/urls/:id", (req, res) => {
+  const id = req.params.id;
+  const newLongURL = req.body.longURL;
+  urlDatabase[id] = newLongURL;
+  res.redirect('/urls');
+});
+
+// Route to render the form for editing a URL
+app.get("/urls/:id/update", (req, res) => {
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  res.render("urls_show", templateVars);
+});
