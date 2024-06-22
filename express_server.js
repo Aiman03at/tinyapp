@@ -130,3 +130,9 @@ app.post("/urls/:id", (req, res) => {
   res.redirect('/urls');
 });
 
+app.post("/login",(req,res)=>{
+  const uname = req.body.username;
+  res.cookie('username',uname);
+  console.log(uname);
+  
+})
