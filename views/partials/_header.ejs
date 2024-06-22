@@ -22,21 +22,16 @@
       
     </div>
     <% if (username) { %>
-      <span>Welcome, <%= username %>!</span>
-      <form class="form-inline" action="/login" method="POST">
+      
+      <span style="margin-right: 1em;">Logged in as : <%= username %></span>
+      
+      <form class="form-inline" action="/logout" method="POST">
         <div class="form-group mb-2">
-          
-          <input
-            class="form-control"
-            type="text"
-            name="username"
-            placeholder="Username"
-            style="width: 300px; margin: 1em"
-          />
-          <button type="submit" class="btn btn-primary"> Login </button>
+          <button type="submit" class="btn btn-primary"> Logout </button>
         </div>
       </form>
     <% } %>
+    <% if (!username) { %>
     <form class="form-inline" action="/login" method="POST">
       <div class="form-group mb-2">
         
@@ -50,7 +45,8 @@
         <button type="submit" class="btn btn-primary"> Login </button>
       </div>
     </form>
-    <span>    </span>
+    <% } %>
+    
     
   </nav>
 </header>
