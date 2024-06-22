@@ -4,7 +4,9 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
+app.use(cookieParser())
 // Middleware to parse request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 ///This tells the Express app to use EJS as its templating engine.
@@ -81,17 +83,19 @@ app.get("/fetch", (req, res) => {
 */
 /////add a new route handler for "/urls" and use res.render() to pass the URL data to our template.
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  
+  const templateVars = { username: req.cookies["username"], urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 // add a new a GET route to render the urls_new.ejs template (given below) in the browser, to present the form to the user;
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars ={username: req.cookies["username"]}
+  res.render("urls_new",templateVars);
 });
 ///Adding a Second Route and Template
 ///The end point for such a page will be in the format /urls/:id. The : in front of id indicates that id is a route parameter.
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]};
+  const templateVars = { username: req.cookies["username"], id: req.params.id, longURL: urlDatabase[req.params.id]};
   res.render("urls_show", templateVars);
 });
 
