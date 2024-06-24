@@ -15,6 +15,21 @@ app.set("view engine", "ejs");
 ///To make this data readable, we will need to use another piece of middleware which will translate, or parse the body.
 app.use(express.urlencoded({ extended: true }));
 
+////An array to create users///
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 ///Database
 
 const urlDatabase = {
@@ -84,12 +99,12 @@ app.get("/fetch", (req, res) => {
 /////add a new route handler for "/urls" and use res.render() to pass the URL data to our template.
 app.get("/urls", (req, res) => {
   
-  const templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  const templateVars = { users:users, urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 // add a new a GET route to render the urls_new.ejs template (given below) in the browser, to present the form to the user;
 app.get("/urls/new", (req, res) => {
-  const templateVars ={username: req.cookies["username"]}
+  const templateVars ={users:users}
   res.render("urls_new",templateVars);
 });
 ///Adding a Second Route and Template
@@ -150,8 +165,21 @@ app.post("/logout",(req,res)=>{
 /////Create a post request for register
 
 app.post("/register",(req,res)=>{
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = {id, email, password};
+  users[id] = user;
+  res.cookie('user_id',id);
+  res.redirect("/urls");
+  console.log(users);
+})
 
-})
-app.get("/register",(req,res)=>{
-  console.log(req.body);
-})
+
+
+app.get("/register", (req, res) => {
+  
+  const templateVars = { user_id: req.cookies["user_id"], urls: users };
+  console.log(templateVars);
+  res.render("register", templateVars);
+});
