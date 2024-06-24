@@ -55,6 +55,23 @@ const urlDatabase = {
     return randomString;
   }
 
+//// function to check if the email is already registered
+
+/**
+ * Function to check if email is already present in the users object
+ * @param {string} email - The email to check for existence
+ * @param {object} users - The users object to check against
+ * @returns {boolean} - Returns true if email exists, otherwise false
+ */
+function getUserByemail(email, users) {
+  for (const key of Object.keys(users)) {
+    if (users[key].email === email) {
+      return true;
+    }
+    
+  }
+  return false;
+}
 
 ///Using express to create a server
 
@@ -168,7 +185,16 @@ app.post("/register",(req,res)=>{
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+
   const user = {id, email, password};
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required.' });
+  }
+  if (getUserByemail(email,users)) {
+    return res.status(400).json({error : 'Email already registered'});
+  }
+  
   users[id] = user;
   res.cookie('user_id',id);
   res.redirect("/urls");
