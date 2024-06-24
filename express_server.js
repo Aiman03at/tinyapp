@@ -160,6 +160,7 @@ app.post("/urls/:id/delete",(req,res)=>{
 
 // Post method to update a URL entry
 app.post("/urls/:id", (req, res) => {
+  
   const id = req.params.id;
   const newLongURL = req.body.longURL;
   urlDatabase[id] = newLongURL;
@@ -168,9 +169,21 @@ app.post("/urls/:id", (req, res) => {
 
 ///POST method for Login
 app.post("/login",(req,res)=>{
-  const uname = req.body.username;
-  res.cookie('username',uname);
-  res.redirect('/urls');
+  console.log(req.body);
+  
+  const email =req.body.email;
+  const password = req.body.password;
+  
+  
+})
+
+app.get("/login",(req,res)=>{
+  const templateVars = {
+    email:req.body.email, password:req.body.password
+  }
+  console.log(req.body);
+  res.render("login",templateVars)
+  
 })
 
 app.post("/logout",(req,res)=>{
