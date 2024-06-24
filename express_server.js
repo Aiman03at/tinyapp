@@ -145,3 +145,13 @@ app.post("/logout",(req,res)=>{
   res.clearCookie("username");
   res.redirect("/urls");
 })
+
+
+/////Create a post request for register
+
+app.post("/register",(req,res)=>{
+
+})
+app.get("/register",(req,res)=>{
+  console.log(req.body);
+})
