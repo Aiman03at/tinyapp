@@ -115,9 +115,13 @@ app.get("/fetch", (req, res) => {
 */
 /////add a new route handler for "/urls" and use res.render() to pass the URL data to our template.
 app.get("/urls", (req, res) => {
+
   const user_id = req.cookies.user_id; ;
   
   const user = users[user_id] ;
+  if(!user_id) {
+    return res.status(403).send("Please login first")
+  }
   
   const templateVars = { user : user, urls: urlDatabase , user_id : user_id};
   res.render("urls_index", templateVars);
@@ -140,6 +144,13 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const user_id = req.cookies.user_id; ;
   const user = users[user_id] ;
+  const id =req.params.id;
+  if(!user_id) {
+    return res.status(403).send("Please login to see the list");
+  }
+  if (!users[id]) {
+    return res.status(400).send("This Id does not exist");
+  }
   const templateVars = { user : user, id: req.params.id, longURL: urlDatabase[req.params.id],user_id : user_id};
   res.render("urls_show", templateVars);
 });
@@ -148,19 +159,34 @@ app.get("/urls/:id", (req, res) => {
 
 ////Post method to redirect to the shortURL
 app.post("/urls", (req, res) => {
-  console.log(req.body.longURL); // Log the POST request body to the console
+   // Log the POST request body to the console
+
+   if(!user_id) {
+    return res.status(403).send("Please login to add new url")
+  }
+  const user_id = req.cookies.user_id; ;
+  const user = users[user_id] ;
   let random =generateRandomString();
   console.log(random);
-  urlDatabase[random] = req.body.longURL;
+  urlDatabase[random] = {
+    longURL: req.body.longURL,
+    userID: user_id
+  };
   res.redirect(`/urls/${random}`); // Redirect to the short uRL
   
 });
 
 
+
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
+  if (users[id]) {
   const longURL = urlDatabase[id];
   res.redirect(longURL);
+  }
+  else{
+    return res.status(400).send("This Id does not exist");
+  }
 });
 
 ////Post method to delete an entry
