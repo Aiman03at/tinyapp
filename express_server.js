@@ -128,7 +128,12 @@ app.get("/urls/new", (req, res) => {
   const user = users[user_id] ;
   const id = req.params.id;
  const templateVars ={id :id ,user_id :user_id ,user : user}
+ if (!user_id) {
+  res.redirect("/login")
+ }
+ if(user_id) {
   res.render("urls_new",templateVars);
+ }
 });
 ///Adding a Second Route and Template
 ///The end point for such a page will be in the format /urls/:id. The : in front of id indicates that id is a route parameter.
