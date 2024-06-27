@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 
 app.use(cookieParser())
 // Middleware to parse request bodies
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.urlencoded({ extended: true }));
 ///This tells the Express app to use EJS as its templating engine.
 app.set("view engine", "ejs");
 
@@ -115,19 +115,27 @@ app.get("/fetch", (req, res) => {
 */
 /////add a new route handler for "/urls" and use res.render() to pass the URL data to our template.
 app.get("/urls", (req, res) => {
+  const user_id = req.cookies.user_id; ;
   
-  const templateVars = { users:users, urls: urlDatabase };
+  const user = users[user_id] ;
+  
+  const templateVars = { user : user, urls: urlDatabase , user_id : user_id};
   res.render("urls_index", templateVars);
 });
 // add a new a GET route to render the urls_new.ejs template (given below) in the browser, to present the form to the user;
 app.get("/urls/new", (req, res) => {
-  const templateVars ={users:users}
+  const user_id = req.cookies.user_id; ;
+  const user = users[user_id] ;
+  const id = req.params.id;
+ const templateVars ={id :id ,user_id :user_id ,user : user}
   res.render("urls_new",templateVars);
 });
 ///Adding a Second Route and Template
 ///The end point for such a page will be in the format /urls/:id. The : in front of id indicates that id is a route parameter.
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { username: req.cookies["username"], id: req.params.id, longURL: urlDatabase[req.params.id]};
+  const user_id = req.cookies.user_id; ;
+  const user = users[user_id] ;
+  const templateVars = { user : user, id: req.params.id, longURL: urlDatabase[req.params.id],user_id : user_id};
   res.render("urls_show", templateVars);
 });
 
@@ -145,7 +153,7 @@ app.post("/urls", (req, res) => {
 
 
 app.get("/u/:id", (req, res) => {
-  let id = req.params.id;
+  const id = req.params.id;
   const longURL = urlDatabase[id];
   res.redirect(longURL);
 });
@@ -169,28 +177,50 @@ app.post("/urls/:id", (req, res) => {
 
 ///POST method for Login
 app.post("/login",(req,res)=>{
-  console.log(req.body);
   
   const email =req.body.email;
   const password = req.body.password;
+  if (getUserByemail(email,users)) {
+    for ( const key of Object.keys(users)) {
+      //const user = users[key];
+      console.log(users[key]);
+      console.log(users[key].email)
+      console.log(users[key].password);
+      if ( users[key].password === password) {
+        res.cookie('user_id',users[key].id);
+        
+        res.redirect("/urls");
+    } 
+  }
+  
+    return res.status(403).json({error:'Password not matching'})
+  
+    
+  } else {
+    return res.status(403).json({ error: 'Email is not matching' });
+  }
   
   
 })
 
 app.get("/login",(req,res)=>{
-  const templateVars = {
-    email:req.body.email, password:req.body.password
-  }
-  console.log(req.body);
-  res.render("login",templateVars)
+  //const user_id = req.cookies.user_id; 
+  const user_id = null;
+  templateVars = {user_id : user_id}
+  res.render("login", templateVars)
   
 })
 
 app.post("/logout",(req,res)=>{
-  res.clearCookie("username");
-  res.redirect("/urls");
+  
 })
-
+////
+app.get("/logout",(req,res)=>{
+  res.clearCookie("user_id");
+  res.redirect("/login");
+  
+ 
+})
 
 /////Create a post request for register
 
@@ -209,16 +239,20 @@ app.post("/register",(req,res)=>{
   }
   
   users[id] = user;
-  res.cookie('user_id',id);
-  res.redirect("/urls");
-  console.log(users);
+  //res.cookie('user_id',id);
+  res.redirect("/login");
+  
 })
 
 
 
 app.get("/register", (req, res) => {
   
-  const templateVars = { user_id: req.cookies["user_id"], urls: users };
-  console.log(templateVars);
+  const user_id = null;
+ 
+  const templateVars = { urls: users , user_id: user_id};
+
   res.render("register", templateVars);
 });
+
+
