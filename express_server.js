@@ -66,7 +66,7 @@ const urlDatabase = {
 function getUserByemail(email, users) {
   for (const key of Object.keys(users)) {
     if (users[key].email === email) {
-      return true;
+      return key;
     }
     
   }
@@ -181,27 +181,28 @@ app.post("/login",(req,res)=>{
   const email =req.body.email;
   const password = req.body.password;
   if (getUserByemail(email,users)) {
-    for ( const key of Object.keys(users)) {
-      //const user = users[key];
-      console.log(users[key]);
-      console.log(users[key].email)
-      console.log(users[key].password);
-      if ( users[key].password === password) {
-        res.cookie('user_id',users[key].id);
+   
+      const found_user_id = getUserByemail(email,users);
+      const found_user = users[found_user_id];
+      
+      if ( found_user.password === password) {
+        res.cookie('user_id',found_user_id);
         
         res.redirect("/urls");
-    } 
-  }
+     
+       } else {
   
-    return res.status(403).json({error:'Password not matching'})
+      return res.status(403).json({error:'Password not matching'})
   
-    
-  } else {
+       }
+      }
+   else {
     return res.status(403).json({ error: 'Email is not matching' });
   }
   
   
 })
+////get request to render login page
 
 app.get("/login",(req,res)=>{
   //const user_id = req.cookies.user_id; 
@@ -211,16 +212,13 @@ app.get("/login",(req,res)=>{
   
 })
 
-app.post("/logout",(req,res)=>{
-  
-})
-////
+////Post request to clear all cookies
+
 app.get("/logout",(req,res)=>{
   res.clearCookie("user_id");
-  res.redirect("/login");
-  
- 
+  res.redirect("/login"); 
 })
+
 
 /////Create a post request for register
 
