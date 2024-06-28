@@ -193,6 +193,7 @@ app.post("/urls", (req, res) => {
     longURL: req.body.longURL,
     userID: user_id
   };
+  
   res.redirect(`/urls/${random}`); // Redirect to the short uRL
   
 });
@@ -220,11 +221,17 @@ app.post("/urls/:id/delete",(req,res)=>{
 
 // Post method to update a URL entry
 app.post("/urls/:id", (req, res) => {
-  
+  const user_id = req.cookies.user_id; 
   const id = req.params.id;
+
   const newLongURL = req.body.longURL;
-  urlDatabase[id].longURL = newLongURL;
-  res.redirect('/urls');
+  if (urlDatabase[id].userID === user_id) {
+    urlDatabase[id].longURL = newLongURL;
+    res.redirect('/urls');
+  } else {
+    res.status(403).send("You do not have permission to update this URL");
+  }
+  
 });
 
 ///POST method for Login
