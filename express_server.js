@@ -5,6 +5,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
 
 app.use(cookieParser())
 // Middleware to parse request bodies
@@ -279,12 +280,13 @@ app.post("/login",(req,res)=>{
   
   const email =req.body.email;
   const password = req.body.password;
+  const hashed_password = bcrypt.hashSync(password, 10);
   if (getUserByemail(email,users)) {
    
       const found_user_id = getUserByemail(email,users);
       const found_user = users[found_user_id];
       
-      if ( found_user.password === password) {
+      if ( bcrypt.compareSync(found_user.password, hashed_password)) {
         res.cookie('user_id',found_user_id);
         
         res.redirect("/urls");
@@ -325,8 +327,8 @@ app.post("/register",(req,res)=>{
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
-
-  const user = {id, email, password};
+  const hashed_password = bcrypt.hashSync(password, 10);
+  const user = {id, email, hashed_password};
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
