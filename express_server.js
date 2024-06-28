@@ -33,8 +33,14 @@ const users = {
 ///Database
 
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 ///a function that returns a string of 6 random alphanumeric characters:
@@ -72,6 +78,18 @@ function getUserByemail(email, users) {
   }
   return false;
 }
+/// Function to filter URLs for a specific user
+function urlsForUser(id) {
+  const userUrls = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userUrls[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userUrls;
+}
+
+
 
 ///Using express to create a server
 
@@ -116,14 +134,18 @@ app.get("/fetch", (req, res) => {
 /////add a new route handler for "/urls" and use res.render() to pass the URL data to our template.
 app.get("/urls", (req, res) => {
 
-  const user_id = req.cookies.user_id; ;
+  const user_id = req.cookies.user_id; 
+  
+  
   
   const user = users[user_id] ;
   if(!user_id) {
     return res.status(403).send("Please login first")
   }
   
-  const templateVars = { user : user, urls: urlDatabase , user_id : user_id};
+  const userUrls = urlsForUser(user_id);
+  const templateVars = { user: users[user_id], urls: userUrls , urls: urlDatabase , user_id : user_id};
+  
   res.render("urls_index", templateVars);
 });
 // add a new a GET route to render the urls_new.ejs template (given below) in the browser, to present the form to the user;
@@ -148,10 +170,10 @@ app.get("/urls/:id", (req, res) => {
   if(!user_id) {
     return res.status(403).send("Please login to see the list");
   }
-  if (!users[id]) {
+  if (!urlDatabase[id]) {
     return res.status(400).send("This Id does not exist");
   }
-  const templateVars = { user : user, id: req.params.id, longURL: urlDatabase[req.params.id],user_id : user_id};
+  const templateVars = { user : user, id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user_id : user_id};
   res.render("urls_show", templateVars);
 });
 
@@ -161,10 +183,9 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
    // Log the POST request body to the console
 
-   if(!user_id) {
-    return res.status(403).send("Please login to add new url")
-  }
-  const user_id = req.cookies.user_id; ;
+   
+  const user_id = req.cookies.user_id; 
+  
   const user = users[user_id] ;
   let random =generateRandomString();
   console.log(random);
@@ -180,8 +201,8 @@ app.post("/urls", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
-  if (users[id]) {
-  const longURL = urlDatabase[id];
+  if (urlDatabase[id]) {
+  const longURL = urlDatabase[id].longURL;
   res.redirect(longURL);
   }
   else{
@@ -202,7 +223,7 @@ app.post("/urls/:id", (req, res) => {
   
   const id = req.params.id;
   const newLongURL = req.body.longURL;
-  urlDatabase[id] = newLongURL;
+  urlDatabase[id].longURL = newLongURL;
   res.redirect('/urls');
 });
 
