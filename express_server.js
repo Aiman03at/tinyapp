@@ -4,10 +4,20 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+//const cookieParser = require('cookie-parser');
 const bcrypt = require("bcryptjs");
+var cookieSession = require('cookie-session')
 
-app.use(cookieParser())
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ['user'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+
+//app.use(cookieParser())
 // Middleware to parse request bodies
 //app.use(bodyParser.urlencoded({ extended: true }));
 ///This tells the Express app to use EJS as its templating engine.
@@ -135,7 +145,7 @@ app.get("/fetch", (req, res) => {
 /////add a new route handler for "/urls" and use res.render() to pass the URL data to our template.
 app.get("/urls", (req, res) => {
 
-  const user_id = req.cookies.user_id; 
+  const user_id = req.session.user_id;
   
   
   
@@ -151,7 +161,7 @@ app.get("/urls", (req, res) => {
 });
 // add a new a GET route to render the urls_new.ejs template (given below) in the browser, to present the form to the user;
 app.get("/urls/new", (req, res) => {
-  const user_id = req.cookies.user_id; ;
+  const user_id = req.session.user_id;
   const user = users[user_id] ;
   const id = req.params.id;
  const templateVars ={id :id ,user_id :user_id ,user : user}
@@ -165,7 +175,7 @@ app.get("/urls/new", (req, res) => {
 ///Adding a Second Route and Template
 ///The end point for such a page will be in the format /urls/:id. The : in front of id indicates that id is a route parameter.
 app.get("/urls/:id", (req, res) => {
-  const user_id = req.cookies.user_id; ;
+  const user_id = req.session.user_id;
   const user = users[user_id] ;
   const id =req.params.id;
   const url = urlDatabase[id];
@@ -193,7 +203,7 @@ app.post("/urls", (req, res) => {
    // Log the POST request body to the console
 
    
-  const user_id = req.cookies.user_id; 
+  const user_id = req.session.user_id;
   
   const user = users[user_id] ;
   let random =generateRandomString();
@@ -223,7 +233,7 @@ app.get("/u/:id", (req, res) => {
 ////Post method to delete an entry
 
 app.post("/urls/:id/delete",(req,res)=>{
-  const user_id = req.cookies.user_id;
+  const user_id = req.session.user_id;
   
   const user = users[user_id] ;
   const id =req.params.id;
@@ -248,7 +258,7 @@ app.post("/urls/:id/delete",(req,res)=>{
 
 // Post method to update a URL entry
 app.post("/urls/:id", (req, res) => {
-  const user_id = req.cookies.user_id; 
+  const user_id = req.session.user_id;
   const id = req.params.id;
   
   const user = users[user_id] ;
@@ -287,8 +297,9 @@ app.post("/login",(req,res)=>{
       const found_user = users[found_user_id];
       
       if ( bcrypt.compareSync(found_user.password, hashed_password)) {
-        res.cookie('user_id',found_user_id);
-        
+        //res.cookie('user_id',found_user_id);
+        //set the session
+        req.session.user_id = found_user_id;
         res.redirect("/urls");
      
        } else {
