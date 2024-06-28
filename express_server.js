@@ -223,7 +223,20 @@ app.get("/u/:id", (req, res) => {
 
 app.post("/urls/:id/delete",(req,res)=>{
   const user_id = req.cookies.user_id;
-  let id = req.params.id;
+  
+  const user = users[user_id] ;
+  const id =req.params.id;
+  const url = urlDatabase[id];
+  if(!user_id) {
+    return res.status(403).send("Please login to see the list");
+  }
+  if (!urlDatabase[id]) {
+    return res.status(400).send("This Id does not exist");
+  }
+
+  if (!url) {
+    return res.status(404).send("URL not found");
+  }
   if (urlDatabase[id].userID === user_id) {
   delete urlDatabase[id];
   res.redirect('/urls')
@@ -236,6 +249,20 @@ app.post("/urls/:id/delete",(req,res)=>{
 app.post("/urls/:id", (req, res) => {
   const user_id = req.cookies.user_id; 
   const id = req.params.id;
+  
+  const user = users[user_id] ;
+  
+  const url = urlDatabase[id];
+  if(!user_id) {
+    return res.status(403).send("Please login to see the list");
+  }
+  if (!urlDatabase[id]) {
+    return res.status(400).send("This Id does not exist");
+  }
+
+  if (!url) {
+    return res.status(404).send("URL not found");
+  }
 
   const newLongURL = req.body.longURL;
   if (urlDatabase[id].userID === user_id) {
