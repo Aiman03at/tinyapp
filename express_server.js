@@ -167,11 +167,19 @@ app.get("/urls/:id", (req, res) => {
   const user_id = req.cookies.user_id; ;
   const user = users[user_id] ;
   const id =req.params.id;
+  const url = urlDatabase[id];
   if(!user_id) {
     return res.status(403).send("Please login to see the list");
   }
   if (!urlDatabase[id]) {
     return res.status(400).send("This Id does not exist");
+  }
+
+  if (!url) {
+    return res.status(404).send("URL not found");
+  }
+  if (url.userID !== user_id) {
+    return res.status(403).send("You do not have permission to view this URL");
   }
   const templateVars = { user : user, id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user_id : user_id};
   res.render("urls_show", templateVars);
@@ -214,9 +222,14 @@ app.get("/u/:id", (req, res) => {
 ////Post method to delete an entry
 
 app.post("/urls/:id/delete",(req,res)=>{
+  const user_id = req.cookies.user_id;
   let id = req.params.id;
+  if (urlDatabase[id].userID === user_id) {
   delete urlDatabase[id];
   res.redirect('/urls')
+} else {
+  res.status(403).send("You do not have permission to update this URL");
+}
 })
 
 // Post method to update a URL entry
