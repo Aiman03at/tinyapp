@@ -4,6 +4,8 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
+const {getUserByemail} = require('./helpers')
+
 //const cookieParser = require('cookie-parser');
 const bcrypt = require("bcryptjs");
 var cookieSession = require('cookie-session')
@@ -72,33 +74,9 @@ const urlDatabase = {
     return randomString;
   }
 
-//// function to check if the email is already registered
 
-/**
- * Function to check if email is already present in the users object
- * @param {string} email - The email to check for existence
- * @param {object} users - The users object to check against
- * @returns {boolean} - Returns true if email exists, otherwise false
- */
-function getUserByemail(email, users) {
-  for (const key of Object.keys(users)) {
-    if (users[key].email === email) {
-      return key;
-    }
-    
-  }
-  return false;
-}
-/// Function to filter URLs for a specific user
-function urlsForUser(id) {
-  const userUrls = {};
-  for (const shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === id) {
-      userUrls[shortURL] = urlDatabase[shortURL];
-    }
-  }
-  return userUrls;
-}
+
+
 
 
 
@@ -327,7 +305,8 @@ app.get("/login",(req,res)=>{
 ////Post request to clear all cookies
 
 app.get("/logout",(req,res)=>{
-  res.clearCookie("user_id");
+  //res.clearCookie("user_id");
+  req.session['user_id'] = null;
   res.redirect("/login"); 
 })
 
