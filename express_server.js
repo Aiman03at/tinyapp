@@ -354,6 +354,7 @@ app.get("/register", (req, res) => {
 
 
 // Route to update a URL entry
+///Using app.put( and app.delete)
 app.put("/urls/:id", (req, res) => {
   const user_id = req.session.user_id;
   const id = req.params.id;
