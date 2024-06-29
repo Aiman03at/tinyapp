@@ -6,10 +6,14 @@ const PORT = 8080;
 const bodyParser = require('body-parser');
 const getUserByemail = require('./helpers')
 const urlsForUser = require('./helpers2');
+
 //const cookieParser = require('cookie-parser');
 const bcrypt = require("bcryptjs");
-var cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
 
+const methodOverride = require('method-override');
+
+app.use(methodOverride('_method'));
 
 app.use(cookieSession({
   name: 'session',
@@ -349,3 +353,51 @@ app.get("/register", (req, res) => {
 });
 
 
+// Route to update a URL entry
+app.put("/urls/:id", (req, res) => {
+  const user_id = req.session.user_id;
+  const id = req.params.id;
+  const user = users[user_id];
+  const url = urlDatabase[id];
+
+  if (!user_id) {
+    return res.status(403).send("Please login to see the list");
+  }
+  if (!urlDatabase[id]) {
+    return res.status(400).send("This Id does not exist");
+  }
+  if (!url) {
+    return res.status(404).send("URL not found");
+  }
+  const newLongURL = req.body.longURL;
+  if (urlDatabase[id].userID === user_id) {
+    urlDatabase[id].longURL = newLongURL;
+    res.redirect('/urls');
+  } else {
+    res.status(403).send("You do not have permission to update this URL");
+  }
+});
+
+// Route to delete an entry
+app.delete("/urls/:id/delete", (req, res) => {
+  const user_id = req.session.user_id;
+  const user = users[user_id];
+  const id = req.params.id;
+  const url = urlDatabase[id];
+
+  if (!user_id) {
+    return res.status(403).send("Please login to see the list");
+  }
+  if (!urlDatabase[id]) {
+    return res.status(400).send("This Id does not exist");
+  }
+  if (!url) {
+    return res.status(404).send("URL not found");
+  }
+  if (urlDatabase[id].userID === user_id) {
+    delete urlDatabase[id];
+    res.redirect('/urls');
+  } else {
+    res.status(403).send("You do not have permission to delete this URL");
+  }
+});

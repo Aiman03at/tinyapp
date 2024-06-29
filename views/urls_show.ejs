@@ -24,7 +24,7 @@
       <div class="card-footer text-muted"></div>
     </div>
     <h3>Edit URL</h3>
-    <form action="/urls/<%= id %>" method="POST">
+    <form action="/urls/<%= id %>/?_method=PUT" method="POST">
       <div class="form-group">
         <label for="longURL">Update URL:</label>
         <input
