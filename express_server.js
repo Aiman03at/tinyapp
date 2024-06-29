@@ -4,8 +4,8 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-const {getUserByemail} = require('./helpers')
-
+const getUserByemail = require('./helpers')
+const urlsForUser = require('./helpers2');
 //const cookieParser = require('cookie-parser');
 const bcrypt = require("bcryptjs");
 var cookieSession = require('cookie-session')
@@ -42,6 +42,9 @@ const users = {
     password: "dishwasher-funk",
   },
 };
+
+
+
 
 ///Database
 
@@ -132,7 +135,7 @@ app.get("/urls", (req, res) => {
     return res.status(403).send("Please login first")
   }
   
-  const userUrls = urlsForUser(user_id);
+  const userUrls = urlsForUser(user_id,urlDatabase);
   const templateVars = { user: users[user_id], urls: userUrls , urls: urlDatabase , user_id : user_id};
   
   res.render("urls_index", templateVars);
@@ -273,8 +276,9 @@ app.post("/login",(req,res)=>{
    
       const found_user_id = getUserByemail(email,users);
       const found_user = users[found_user_id];
+      const hashed_password = bcrypt.hashSync(password, 10);
       
-      if ( bcrypt.compareSync(found_user.password, password)) {
+      if ( bcrypt.compareSync(found_user.password ,hashed_password)) {
         //res.cookie('user_id',found_user_id);
         //set the session
         req.session.user_id = found_user_id;
