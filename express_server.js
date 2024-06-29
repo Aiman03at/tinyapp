@@ -268,13 +268,13 @@ app.post("/login",(req,res)=>{
   
   const email =req.body.email;
   const password = req.body.password;
-  const hashed_password = bcrypt.hashSync(password, 10);
+  
   if (getUserByemail(email,users)) {
    
       const found_user_id = getUserByemail(email,users);
       const found_user = users[found_user_id];
       
-      if ( bcrypt.compareSync(found_user.password, hashed_password)) {
+      if ( bcrypt.compareSync(found_user.password, password)) {
         //res.cookie('user_id',found_user_id);
         //set the session
         req.session.user_id = found_user_id;
@@ -316,9 +316,9 @@ app.get("/logout",(req,res)=>{
 app.post("/register",(req,res)=>{
   const id = generateRandomString();
   const email = req.body.email;
-  const password = req.body.password;
-  const hashed_password = bcrypt.hashSync(password, 10);
-  const user = {id, email, hashed_password};
+  const password_unhashed = req.body.password;
+  const password = bcrypt.hashSync(password_unhashed, 10);
+  const user = {id, email, password};
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
