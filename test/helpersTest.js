@@ -1,7 +1,7 @@
 const chai = require('chai'); // Fixing the import statement
 const assert = chai.assert;
 
-const  getUserByEmail  = require('../helpers.js');
+const  {getUserByEmail}  = require('../helpers.js');
 
 const testUsers = {
   "userRandomID": {

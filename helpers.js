@@ -6,7 +6,7 @@
  * @param {object} users - The users object to check against
  * @returns {boolean} - Returns true if email exists, otherwise false
  */
-function getUserByemail(email, users) {
+function getUserByEmail(email, users) {
   for (const key of Object.keys(users)) {
     if (users[key].email === email) {
       console.log(key);
@@ -19,6 +19,37 @@ function getUserByemail(email, users) {
 }
 
 
+///a function that returns a string of 6 random alphanumeric characters:
+/**
+ * @returns---6 digit alphanumeric character
+ */
+
+function generateRandomString() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  
+  let randomString = '';
+  
+  for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      randomString += characters[randomIndex];
+  }
+  
+  return randomString;
+}
+
+// Function to filter URLs for a specific user
+
+function urlsForUser(id, urlDatabase) {
+  const userUrls = {};
+  for (const shortURL in urlDatabase) {
+    
+    if (urlDatabase[shortURL].userId === id) {
+      userUrls[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userUrls;
+}
 
 
-module.exports = getUserByemail;
+
+module.exports = { getUserByEmail, generateRandomString, urlsForUser };

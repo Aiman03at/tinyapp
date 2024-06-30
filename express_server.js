@@ -1,18 +1,15 @@
-//the following code allows us to make HTTP requests on port 8080.
+//The following code allows us to make HTTP requests on port 8080.
 
 const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-const getUserByemail = require('./helpers')
-const urlsForUser = require('./helpers2');
-
-//const cookieParser = require('cookie-parser');
+const {urlsForUser,generateRandomString,getUserByEmail} = require('./helpers');
 const bcrypt = require("bcryptjs");
 const cookieSession = require('cookie-session');
-
 const methodOverride = require('method-override');
 
+/////Using all the above dependencies////////
 app.use(methodOverride('_method'));
 
 app.use(cookieSession({
@@ -23,16 +20,14 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 
-//app.use(cookieParser())
-// Middleware to parse request bodies
-//app.use(bodyParser.urlencoded({ extended: true }));
-///This tells the Express app to use EJS as its templating engine.
+//This tells the Express app to use EJS as its templating engine.
 app.set("view engine", "ejs");
 
-///To make this data readable, we will need to use another piece of middleware which will translate, or parse the body.
+//To make this data readable, we will need to use another piece of middleware which will translate, or parse the body.
 app.use(express.urlencoded({ extended: true }));
 
-////An array to create users///
+
+////An Object to create users/////
 
 const users = {
   userRandomID: {
@@ -50,7 +45,7 @@ const users = {
 
 
 
-///Database
+///Database/////
 
 const urlDatabase = {
   b6UTxQ: {
@@ -63,23 +58,6 @@ const urlDatabase = {
   },
 };
 
-///a function that returns a string of 6 random alphanumeric characters:
-/**
- * @returns---6 digit alphanumeric character
- */
-
-  function generateRandomString() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    
-    let randomString = '';
-    
-    for (let i = 0; i < 6; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        randomString += characters[randomIndex];
-    }
-    
-    return randomString;
-  }
 
 
 
@@ -87,11 +65,11 @@ const urlDatabase = {
 
 
 
-///Using express to create a server
+///Using express to create a server//////
 
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.send("Hello!  This is a Tiny App--use to creates shortURLS for longer URLS");
 });
 
 app.listen(PORT, () => {
@@ -115,18 +93,10 @@ app.get("/hello",(req,res) =>{
 
 })
 
-///accessing a variable sent in one request from another request
-//a cannot be accessed through fetch
-
-/*app.get("/set", (req, res) => {
-  const a = 1;
-  res.send(`a = ${a}`);
-});
-
 app.get("/fetch", (req, res) => {
   res.send(`a = ${a}`);
 });
-*/
+
 /////add a new route handler for "/urls" and use res.render() to pass the URL data to our template.
 app.get("/urls", (req, res) => {
 
@@ -275,10 +245,9 @@ app.post("/login",(req,res)=>{
   
   const email =req.body.email;
   const password = req.body.password;
-  
-  if (getUserByemail(email,users)) {
+  const found_user_id = getUserByEmail(email,users);
+  if (found_user_id) {
    
-      const found_user_id = getUserByemail(email,users);
       const found_user = users[found_user_id];
       const hashed_password = bcrypt.hashSync(password, 10);
       
@@ -331,13 +300,14 @@ app.post("/register",(req,res)=>{
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
-  if (getUserByemail(email,users)) {
+  if (getUserByEmail(email,users)) {
     return res.status(400).json({error : 'Email already registered'});
   }
   
   users[id] = user;
   //res.cookie('user_id',id);
-  res.redirect("/login");
+  req.session.user_id = id;
+  res.redirect("/urls");
   
 })
 
@@ -358,6 +328,7 @@ app.get("/register", (req, res) => {
 app.put("/urls/:id", (req, res) => {
   const user_id = req.session.user_id;
   const id = req.params.id;
+  
   const user = users[user_id];
   const url = urlDatabase[id];
 
