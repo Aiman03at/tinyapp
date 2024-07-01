@@ -6,17 +6,21 @@
  * @param {object} users - The users object to check against
  * @returns {boolean} - Returns true if email exists, otherwise false
  */
+
+
 function getUserByEmail(email, users) {
   for (const key of Object.keys(users)) {
+    
     if (users[key].email === email) {
-      console.log(key);
-      return key;
+      
+      return users[key];
 
     }
     
   }
   return undefined;
 }
+
 
 
 ///a function that returns a string of 6 random alphanumeric characters:

@@ -113,7 +113,7 @@ app.get("/urls", (req, res) => {
   }
   const userUrls = urlsForUser(user_id, urlDatabase);
   
-  console.log(userUrls);
+  
   const templateVars = { user: user, urls: userUrls , user_id : user_id};
   
   res.render("urls_index", templateVars);
@@ -249,16 +249,17 @@ app.post("/login",(req,res)=>{
   
   const email =req.body.email;
   const password = req.body.password;
-  const found_user_id = getUserByEmail(email,users);
-  if (found_user_id) {
-   
-      const found_user = users[found_user_id];
-      const hashed_password = bcrypt.hashSync(password, 10);
+  const found_user= getUserByEmail(email,users);
+  
+  console.log(found_user);
+  
+  if (found_user) {
+    
       
-      if ( bcrypt.compareSync(found_user.password ,hashed_password)) {
+      if ( bcrypt.compareSync(password, found_user.password )) {
         //res.cookie('user_id',found_user_id);
         //set the session
-        req.session.user_id = found_user_id;
+        req.session.user_id = found_user.id;
         res.redirect("/urls");
      
        } else {
@@ -285,7 +286,7 @@ app.get("/login",(req,res)=>{
 
 ////Post request to clear all cookies
 
-app.get("/logout",(req,res)=>{
+app.post("/logout",(req,res)=>{
   //res.clearCookie("user_id");
   req.session = null;
   res.redirect("/login"); 
@@ -295,12 +296,14 @@ app.get("/logout",(req,res)=>{
 /////Create a post request for register
 
 app.post("/register",(req,res)=>{
+
+
   const id = generateRandomString();
   const email = req.body.email;
   const password_unhashed = req.body.password;
   const password = bcrypt.hashSync(password_unhashed, 10);
   const user = {id, email, password};
-
+  console.log(users);
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
@@ -309,6 +312,7 @@ app.post("/register",(req,res)=>{
   }
   
   users[id] = user;
+  console.log(users);
   //res.cookie('user_id',id);
   req.session.user_id = id;
   res.redirect("/urls");

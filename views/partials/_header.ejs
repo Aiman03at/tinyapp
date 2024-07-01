@@ -23,7 +23,9 @@
         <% if (user_id) { %>
           <span class="nav-item nav-link">Logged in as <%= user.email %></span>
           
-          <a class="nav-item nav-link" href="/logout"> Logout</a>
+          <form action="/logout" method="POST">
+            <button type="submit">Logout</button>
+          </form>
         <% } if (!user_id) { %>
         
         <a class="nav-item nav-link" href="/login"> Login</a>
