@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const PORT = 8080;
 const bodyParser = require('body-parser');
-const {urlsForUser,generateRandomString,getUserByEmail} = require('./helpers');
+const { getUserByEmail, generateRandomString, urlsForUser } = require('./helpers');
 const bcrypt = require("bcryptjs");
 const cookieSession = require('cookie-session');
 const methodOverride = require('method-override');
@@ -69,7 +69,13 @@ const urlDatabase = {
 
 
 app.get("/", (req, res) => {
-  res.send("Hello!  This is a Tiny App--use to creates shortURLS for longer URLS");
+  //res.send("Hello!  This is a Tiny App--use to creates shortURLS for longer URLS");
+  const user_id = req.session.user_id;
+  if(user_id) {
+    res.redirect("/urls");
+  }else {
+  res.redirect("/login");
+  }
 });
 
 app.listen(PORT, () => {
@@ -101,16 +107,14 @@ app.get("/fetch", (req, res) => {
 app.get("/urls", (req, res) => {
 
   const user_id = req.session.user_id;
-  
-  
-  
   const user = users[user_id] ;
   if(!user_id) {
     return res.status(403).send("Please login first")
   }
+  const userUrls = urlsForUser(user_id, urlDatabase);
   
-  const userUrls = urlsForUser(user_id,urlDatabase);
-  const templateVars = { user: users[user_id], urls: userUrls , urls: urlDatabase , user_id : user_id};
+  console.log(userUrls);
+  const templateVars = { user: user, urls: userUrls , user_id : user_id};
   
   res.render("urls_index", templateVars);
 });
@@ -162,7 +166,7 @@ app.post("/urls", (req, res) => {
   
   const user = users[user_id] ;
   let random =generateRandomString();
-  console.log(random);
+ 
   urlDatabase[random] = {
     longURL: req.body.longURL,
     userID: user_id
@@ -283,7 +287,7 @@ app.get("/login",(req,res)=>{
 
 app.get("/logout",(req,res)=>{
   //res.clearCookie("user_id");
-  req.session['user_id'] = null;
+  req.session = null;
   res.redirect("/login"); 
 })
 
